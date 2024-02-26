@@ -1,0 +1,1 @@
+# vogal_approximation_numpy

@@ -33,49 +33,56 @@ def calculate_difference(cost_matrix):
 
 
 def vogel_approximation_method(cost_matrix, supply, demand):
-    cost_matrix = cost_matrix.copy()
-    result = np.zeros(shape=cost_matrix.shape, dtype=np.int32)
-    total_demand = demand.sum()
-    while total_demand > result.sum():
-    
-        r, c = calculate_difference(cost_matrix=cost_matrix)
+    if supply.sum() >= demand.sum():
+        cost_matrix = cost_matrix.copy()
+        result = np.zeros(shape=cost_matrix.shape, dtype=np.int32)
+        total_demand = demand.sum()
+        print(cost_matrix)
+        print(result)
+        while total_demand > result.sum():
         
-        if c.max() >= r.max():
-            column_index = c.argmax()
-            position_index = cost_matrix[:,column_index].argmin()
-            s = supply[position_index]
-            d = demand[column_index]
-            if s >= d:
-                demand[column_index] -= d
-                supply[position_index] -= d
-                result[position_index, column_index] = d
-                for j in range(len(r)):
-                    cost_matrix[j, column_index] = np.inf
+            r, c = calculate_difference(cost_matrix=cost_matrix)
+            print(r,c)
+            if c.max() >= r.max():
+                column_index = c.argmax()
+                
+                position_index = cost_matrix[:,column_index].argmin()
+                s = supply[position_index]
+                d = demand[column_index]
+                if s >= d:
+                    demand[column_index] -= d
+                    supply[position_index] -= d
+                    result[position_index, column_index] = d
+                    for j in range(len(r)):
+                        cost_matrix[j, column_index] = np.inf
+                else:
+                    demand[column_index] -= s
+                    supply[position_index] -= s
+                    result[position_index, column_index] = s
+                    for j in range(len(c)):
+                        cost_matrix[position_index, j] = np.inf
+            
             else:
-                demand[column_index] -= s
-                supply[position_index] -= s
-                result[position_index, column_index] = s
-                for j in range(len(c)):
-                    cost_matrix[position_index, j] = np.inf
-
+                row_index = r.argmax()
+                
+                position_index = cost_matrix[row_index].argmin()
+                s = supply[row_index]
+                d = demand[position_index]
+                if s >= d:
+                    demand[position_index] -= d
+                    supply[row_index] -= d
+                    result[row_index, position_index] = d
+                    for j in range(len(r)):
+                        cost_matrix[j, position_index] = np.inf
+                else:
+                    demand[position_index] -= s
+                    supply[row_index] -= s
+                    result[row_index, position_index] = s
+                    for j in range(len(c)):
+                        cost_matrix[row_index, j] = np.inf
+            print(cost_matrix)
+            print(result)
+    else:
+        result = -1
         
-        else:
-            row_index = r.argmax()
-            position_index = cost_matrix[row_index].argmin()
-            s = supply[row_index]
-            d = demand[position_index]
-            if s >= d:
-                demand[position_index] -= d
-                supply[row_index] -= d
-                result[row_index, position_index] = d
-                for j in range(len(r)):
-                    cost_matrix[j, position_index] = np.inf
-            else:
-                demand[position_index] -= s
-                supply[row_index] -= s
-                result[row_index, position_index] = s
-                for j in range(len(c)):
-                    cost_matrix[row_index, j] = np.inf
-
-    
     return result

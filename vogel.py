@@ -1,7 +1,6 @@
 import numpy as np
 
 def calculate_difference(cost_matrix):
-    flag = 0
     row_length = cost_matrix.shape[0]
     column_length = cost_matrix.shape[1]
 
@@ -12,9 +11,9 @@ def calculate_difference(cost_matrix):
         indexes = cost_matrix[i].argsort()[:2]
         if cost_matrix[i][indexes[1]] == np.inf:
             if cost_matrix[i][indexes[0]] == np.inf:
-                column_difference[i] = -1
+                row_difference[i] = -1
             else:
-                column_difference[i] = cost_matrix[i][indexes[0]]
+                row_difference[i] = cost_matrix[i][indexes[0]]
         else:
             row_difference[i] = abs(cost_matrix[i][indexes[0]] - cost_matrix[i][indexes[1]])
 
@@ -32,17 +31,17 @@ def calculate_difference(cost_matrix):
     
     return row_difference, column_difference
 
+
 def vogel_approximation_method(cost_matrix, supply, demand):
+    cost_matrix = cost_matrix.copy()
     result = np.zeros(shape=cost_matrix.shape, dtype=np.int32)
     total_demand = demand.sum()
-    
     while total_demand > result.sum():
     
         r, c = calculate_difference(cost_matrix=cost_matrix)
-        print(r,c)
+        
         if c.max() >= r.max():
             column_index = c.argmax()
-            
             position_index = cost_matrix[:,column_index].argmin()
             s = supply[position_index]
             d = demand[column_index]
@@ -58,10 +57,10 @@ def vogel_approximation_method(cost_matrix, supply, demand):
                 result[position_index, column_index] = s
                 for j in range(len(c)):
                     cost_matrix[position_index, j] = np.inf
+
         
         else:
             row_index = r.argmax()
-            
             position_index = cost_matrix[row_index].argmin()
             s = supply[row_index]
             d = demand[position_index]
@@ -78,4 +77,5 @@ def vogel_approximation_method(cost_matrix, supply, demand):
                 for j in range(len(c)):
                     cost_matrix[row_index, j] = np.inf
 
+    
     return result
